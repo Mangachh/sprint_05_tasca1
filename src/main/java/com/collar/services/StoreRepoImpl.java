@@ -23,6 +23,8 @@ public class StoreRepoImpl {
         this.repo = repo;
     }
 
+    public StoreRepoImpl(){}
+
     public Store save(final Store store) {
         return repo.save(store);
     }

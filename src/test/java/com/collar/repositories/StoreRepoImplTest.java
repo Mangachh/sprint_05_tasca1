@@ -69,20 +69,7 @@ public class StoreRepoImplTest {
         assertEquals(paintings, foundPaints);
         System.out.println(foundPaints);
         
-    }
-
-    @Test
-    public void deletePaintings(){
-        Painting a = new Painting("First Painting", "MadDog", 547.24, LocalDate.of(2015, 7, 1));
-        Painting b= new Painting("Second Painting", "Sanity Cat", 8777, LocalDate.of(1947, 2, 4));
-
-        List<Painting> paintings = new ArrayList<Painting>(List.of(a,b));
-        Store store = new Store("First Store", 47, paintings);
-        repo.save(store);
-
-        repo.deleteAllPaintings(store.getId());
-        assertEquals(0, repo.getPaintingsFromStore(store.getId()).size());
-    }
+    }   
 
     private void createManyStores(){
         Store store = new Store("First Store", 47);

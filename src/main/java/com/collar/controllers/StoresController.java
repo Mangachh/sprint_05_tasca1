@@ -53,16 +53,16 @@ public class StoresController {
         paintings.save(b);
 
         store.setPicture(a);
-        stores.save(store);
+        this.stores.save(store);
 
         //paintings = new ArrayList<Painting>(List.of(a));
 
         store = new Store("Second Store", 4);
         store.setPicture(b);
-        stores.save(store);
+        this.stores.save(store);
 
         store = new Store("Third Store", 27);
-        stores.save(store);
+        this.stores.save(store);
 
     }
 
@@ -92,16 +92,18 @@ public class StoresController {
         }
 
         Store store = new Store(name, capacity);
-        stores.save(store);
+        this.stores.save(store);
         return ResponseEntity.ok().body(store);
     }
 
     /*
      * Llistar botigues: retorna la llista de botigues amb el seu nom i la capacitat
+     * OJU! el ejercicio dice que SOLO devuelve esto, así que no hay ni lista de cuadros ni nada más, 
+     * solo nombre y capacidad
      * (GET /shops/).
      */
     @GetMapping("/shops")
-    private ResponseEntity<List<String>> getStores() {
+    public ResponseEntity<List<String>> getStores() {
         List<Store> listStores = stores.findAll();
         List<String> fixed = listStores.stream()
                 .map(s -> "Store Name: " + s.getName() + "    Store Capacity: " + s.getMaxCapacity()).toList();
@@ -110,7 +112,7 @@ public class StoresController {
     
     /*Incendiar quadres: per si ve la policia, es poden eliminar tots els quadres de la botiga sense deixar rastre (DELETE /shops/{ID}/pictures). */
     @DeleteMapping ("/shops/{id}/pictures")
-    private ResponseEntity<String> deletePaintings(@PathVariable(name = "id") Long id) {
+    public ResponseEntity<String> deletePaintings(@PathVariable(name = "id") Long id) {
 
         Optional<Store> optStore = stores.findById(id);
 
@@ -120,7 +122,7 @@ public class StoresController {
         }
 
         List<Painting> storePaintings = optStore.get().getPictures();
-        paintings.removePaintings(storePaintings);
+        this.paintings.removePaintings(storePaintings);
         storePaintings.clear();
 
         return ResponseEntity.ok().body("Operation Done");
@@ -128,7 +130,7 @@ public class StoresController {
     
     /*Afegir quadre: li donarem el nom del quadre i el del autor (POST /shops/{ID}/pictures) */
     @PostMapping("/shops/{id}/pictures")
-    private ResponseEntity<Painting> setPainting(@PathVariable(name = "id") final Long id, 
+    public ResponseEntity<Painting> setPainting(@PathVariable(name = "id") final Long id, 
             @RequestParam(name = "name", required = false) final String name,
             @RequestParam(name = "artist", required = false) final String artist) {
 
@@ -140,17 +142,20 @@ public class StoresController {
             return ResponseEntity.badRequest().header("Error", "No artist provided").body(null);
         }
 
+        Painting painting = new Painting(name, artist);
+        Optional<Store> store = this.stores.findById(id);
 
-        Painting painting = new Painting(name, artist);        
-        Optional<Store> store = stores.findById(id);
-        
         if (store.isPresent() == false) {
             return ResponseEntity.badRequest().header("Error", "No store with the provided id").body(null);
         }
 
         paintings.save(painting);
         store.get().setPicture(painting);
-        stores.save(store.get());
+        this.stores.save(store.get());
         return ResponseEntity.ok().body(painting);
+    }
+    
+    public void saveStore(final Store store) {
+        this.stores.save(store);
     }
 }
